@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from 'react'; // YENİ: useEffect import edildi
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from "./components/Navbar";
+import Home from './pages/Home';
+import SignUp from './pages/SignUp';
+import Login from './pages/Login';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
+
+import { useAuthStore } from './store/useAuthStore';
+import { useThemeStore } from './store/useThemeStore'; // YENİ: Tema store'u import edildi
+
+const App = () => {
+  const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+  const { theme } = useThemeStore(); // YENİ: Mevcut temayı store'dan al
+
+  // YENİ: Tema değiştiğinde <html> etiketini güncellemek için useEffect kullan
+  useEffect(() => {
+    // document.documentElement, <html> etiketine karşılık gelir
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]); // Bu effect, 'theme' değeri her değiştiğinde yeniden çalışır
+
+  // Auth kontrolü için useEffect
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Auth kontrolü bitene kadar yükleme ekranı göster
+  if (isCheckingAuth) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar />
+      <Routes>
+        <Route path='/' element={authUser ? <Home /> : <Navigate to="/login" />} />
+        <Route path='/signup' element={!authUser ? <SignUp /> : <Navigate to="/" />} />
+        <Route path='/login' element={!authUser ? <Login /> : <Navigate to="/" />} />
+        <Route path='/settings' element={authUser ? <Settings /> : <Navigate to="/login" />} />
+        <Route path='/profile' element={authUser ? <Profile /> : <Navigate to="/login" />} />
+      </Routes>
+      <Toaster />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

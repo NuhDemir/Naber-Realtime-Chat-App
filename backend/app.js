@@ -5,7 +5,8 @@ import cors from "cors";
 import path from "path";
 
 // Socket.IO ve HTTP sunucusu için gerekli importlar
-import { app, server } from "./src/lib/socket.js";
+// ÖNEMLİ: socket.js dosyanızın yolu './src/lib/socket.js' ise bu satırı değiştirmeyin.
+import { app, server } from "./src/lib/socket.js"; 
 
 // Veritabanı ve Rota importları
 import { connectDB } from "./src/lib/db.js";
@@ -30,8 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // API Rotaları
+// Bu rotaların doğru olduğundan emin olun, yoksa 404 hatası alırsınız.
 app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/message", messageRoutes); // 'message' (tekil) olduğundan emin olun
 
 // --- PRODUCTION İÇİN STATİK DOSYA SUNUMU ---
 if (process.env.NODE_ENV === "production") {

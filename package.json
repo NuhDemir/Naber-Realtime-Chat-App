@@ -3,10 +3,16 @@
   "version": "1.0.0",
   "description": "💬 Real-time chat application built with MERN stack (MongoDB, Express, React, Node.js) and styled using Tailwind CSS. Instant messaging, user authentication, and modern UI.",
   "main": "index.js",
+
+
   "scripts": {
     "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-  "start": "npm install --prefix backend && npm run start --prefix backend" },
-  "keywords": [],
+    "start": "npm run start --prefix backend"
+  },
+
+
+
+   "keywords": [],
   "author": "",
   "license": "ISC"
 }

@@ -1,11 +1,7 @@
-import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import dotenv from "dotenv";
+import app from "../../app.js"; // app'i dışardan al
 
-dotenv.config();
-
-const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -47,9 +43,8 @@ io.on("connection", (socket) => {
       }
     }
 
-    // Güncel online kullanıcı listesi
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 
-export { app, server, io };
+export { server, io };

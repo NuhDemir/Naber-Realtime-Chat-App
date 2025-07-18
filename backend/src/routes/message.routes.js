@@ -1,18 +1,24 @@
 import express from "express";
-import { protectRoute } from "../middleware/auth.middleware.js";
 import {
-  getUsersForSidebar,
   getMessages,
   sendMessage,
+  getUsersForSidebar,
 } from "../controller/message.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Sabit yollar önce tanımlanmalı
+// Kenar çubuğu için kullanıcıları getirir (parametreye gerek yok)
 router.get("/users", protectRoute, getUsersForSidebar);
 
-// Dinamik ID içeren yollar en sona
+// Belirtilen ID'ye sahip kullanıcı ile olan mesajları getirir
+// DOĞRU KULLANIM: router.get("/:id", ...)
+// HATALI KULLANIMI DÜZELTİN: router.get("/:", ...) DEĞİL
+router.get("/:id", protectRoute, getMessages);
+
+// Belirtilen ID'ye sahip kullanıcıya mesaj gönderir
+// DOĞRU KULLANIM: router.post("/send/:id", ...)
+// HATALI KULLANIMI DÜZELTİN: router.post("/send/:", ...) DEĞİL
 router.post("/send/:id", protectRoute, sendMessage);
-router.get("/:id", protectRoute, getMessages); // Bu sonda olmalı!
 
 export default router;

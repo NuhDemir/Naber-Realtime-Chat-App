@@ -29,7 +29,7 @@ socketApp.use(cookieParser());
 console.log("🔧 Mounting /api/auth ve /api/message router'ları...");
 
 socketApp.use("/api/auth", authRoutes);
-socketApp.use("/api/message", messageRoutes);
+// socketApp.use("/api/message", messageRoutes);
 
 // Prod ortamı
 if (process.env.NODE_ENV?.trim() === "production") {

@@ -4,61 +4,58 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 
-import { app as socketApp, server } from "./src/lib/socket.js";
 import { connectDB } from "./src/lib/db.js";
 import authRoutes from "./src/routes/auth.routes.js";
-import messageRoutes from "./src/routes/message.route.js";
+import messageRoutes from "./src/routes/message.routes.js";
+import { app, server } from "./src/lib/socket.js";
+import logger from "./src/log/logger.js";
 
 dotenv.config();
-const PORT = process.env.PORT || 5001;
+
+const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-console.log("✅ ENV Loaded:", process.env.CLIENT_URL);
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
-  credentials: true,
-};
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
 
-socketApp.use(cors(corsOptions));
-socketApp.use(express.json({ limit: "5mb" }));
-socketApp.use(express.urlencoded({ extended: true }));
-socketApp.use(cookieParser());
+app.use("/api/auth", authRoutes);
+app.use("/api/message", messageRoutes);
 
-// 🔧 Router logu
-console.log("🔧 Mounting /api/auth ve /api/message router'ları...");
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-try {
-  socketApp.use("/api/auth", authRoutes);
-} catch (err) {
-  console.error("❌ authRoutes yüklenemedi:", err.message);
-}
-
-try {
-  socketApp.use("/api/message", messageRoutes);
-} catch (err) {
-  console.error("❌ messageRoutes yüklenemedi:", err.message);
-}
-
-// Prod ortamı
-if (process.env.NODE_ENV?.trim() === "production") {
-  const staticPath = path.join(__dirname, "../frontend/dist");
-  socketApp.use(express.static(staticPath));
-  socketApp.get("/*", (req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    server.listen(PORT, () => {
-      console.log(`🚀 Server ${PORT} portunda çalışıyor...`);
-    });
-  } catch (err) {
-    console.error("❌ Server başlatma hatası:", err);
-    process.exit(1);
-  }
-};
+// Global error handler
+app.use((err, req, res, next) => {
+  logger.error("💥 Global Error Handler:", { message: err.message, stack: err.stack });
+  res.status(500).json({ message: "Internal Server Error" });
+});
 
-startServer();
+process.on("uncaughtException", (err) => {
+  logger.error("❌ Uncaught Exception:", { message: err.message, stack: err.stack });
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.error("❌ Unhandled Rejection:", { reason });
+});
+
+server.listen(PORT, () => {
+  logger.info("Server is running on PORT:" + PORT);
+  connectDB();
+});

@@ -16,21 +16,17 @@ const io = new Server(server, {
   },
 });
 
-// Kullanıcı ID ile socket ID eşleşmesi: { userId: socketId }
 const userSocketMap = {};
 
-// Diğer dosyaların socket id’ye ulaşabilmesi için export
 export function getReceiverSocketId(userId) {
   return userSocketMap[userId];
 }
 
-// Bağlantı olayı
 io.on("connection", (socket) => {
   console.log("🟢 Bağlantı kuruldu:", socket.id);
 
   const userId = socket.handshake.query?.userId;
 
-  // userId kontrolü (boş, null, undefined veya "undefined" olamaz)
   if (userId && typeof userId === "string" && userId !== "undefined") {
     userSocketMap[userId] = socket.id;
     console.log(`🧾 Kullanıcı kaydedildi: ${userId} -> ${socket.id}`);
@@ -38,14 +34,11 @@ io.on("connection", (socket) => {
     console.warn("⚠️ Geçersiz userId:", userId);
   }
 
-  // Herkese online kullanıcı listesini gönder
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  // Bağlantı kesilince kullanıcıyı haritadan çıkar
   socket.on("disconnect", () => {
     console.log("🔴 Bağlantı koptu:", socket.id);
 
-    // Bu socket.id’ye sahip userId’yi bul ve sil
     for (const [uid, sid] of Object.entries(userSocketMap)) {
       if (sid === socket.id) {
         delete userSocketMap[uid];

@@ -3,18 +3,25 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-// Geliştirme ve production ortamları için sunucu adresini dinamik olarak ayarlar
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+// Socket.IO için de ortam değişkenini kullanıyoruz.
+// Vite, .env dosyasındaki değişkenlere import.meta.env üzerinden erişir.
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 export const useAuthStore = create((set, get) => ({
-  // State Değişkenleri
-  authUser: null,
-  isSigningUp: false,
-  isLoggingIn: false,
-  isUpdatingProfile: false,
-  isCheckingAuth: true,
-  onlineUsers: [],
-  socket: null,
+  // ==================
+  //      STATE
+  // ==================
+  authUser: null,           // Giriş yapmış kullanıcı bilgileri veya null
+  isSigningUp: false,       // Kayıt olma işlemi devam ediyor mu?
+  isLoggingIn: false,       // Giriş yapma işlemi devam ediyor mu?
+  isUpdatingProfile: false, // Profil güncelleme işlemi devam ediyor mu?
+  isCheckingAuth: true,     // Uygulama başlangıcındaki oturum kontrolü devam ediyor mu?
+  onlineUsers: [],          // Çevrimiçi kullanıcıların ID listesi
+  socket: null,             // Socket.IO bağlantı nesnesi
+
+  // ==================
+  //     ACTIONS
+  // ==================
 
   // Kullanıcı oturumunu kontrol eden fonksiyon
   checkAuth: async () => {
@@ -88,7 +95,6 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // --- YENİ EKLENEN FONKSİYON ---
   // Kullanıcı bilgilerini (isim, e-posta) güncelleme fonksiyonu
   updateUserDetails: async (data) => {
     try {
@@ -106,7 +112,7 @@ export const useAuthStore = create((set, get) => ({
     const { authUser, socket } = get();
     // Sadece kullanıcı giriş yapmışsa ve zaten bir bağlantı yoksa bağlan
     if (authUser && !socket?.connected) {
-      const newSocket = io(BASE_URL, {
+      const newSocket = io(SOCKET_URL, {
         query: {
           userId: authUser._id,
         },

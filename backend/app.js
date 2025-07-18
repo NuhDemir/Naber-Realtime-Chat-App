@@ -13,6 +13,8 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
+console.log("✅ ENV Loaded:", process.env.CLIENT_URL);
+
 const corsOptions = {
   origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true,
@@ -23,29 +25,29 @@ socketApp.use(express.json({ limit: "5mb" }));
 socketApp.use(express.urlencoded({ extended: true }));
 socketApp.use(cookieParser());
 
-// API rotaları
+// 🔧 Router logu
+console.log("🔧 Mounting /api/auth ve /api/message router'ları...");
+
 socketApp.use("/api/auth", authRoutes);
 socketApp.use("/api/message", messageRoutes);
 
-// Production ortamında statik dosyalar
+// Prod ortamı
 if (process.env.NODE_ENV?.trim() === "production") {
   const staticPath = path.join(__dirname, "../frontend/dist");
   socketApp.use(express.static(staticPath));
-
   socketApp.get("/*", (req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
   });
 }
 
-// Başlat
 const startServer = async () => {
   try {
     await connectDB();
     server.listen(PORT, () => {
-      console.log(`✅ Server ${PORT} portunda çalışıyor...`);
+      console.log(`🚀 Server ${PORT} portunda çalışıyor...`);
     });
   } catch (err) {
-    console.error("Sunucu başlatılamadı:", err);
+    console.error("❌ Server başlatma hatası:", err);
     process.exit(1);
   }
 };

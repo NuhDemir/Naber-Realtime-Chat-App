@@ -23,11 +23,11 @@ socketApp.use(express.json({ limit: "5mb" }));
 socketApp.use(express.urlencoded({ extended: true }));
 socketApp.use(cookieParser());
 
-// API Rotaları
+// API rotaları
 socketApp.use("/api/auth", authRoutes);
 socketApp.use("/api/message", messageRoutes);
 
-// Statik dosyalar (Production)
+// Production ortamında statik dosyalar
 if (process.env.NODE_ENV?.trim() === "production") {
   const staticPath = path.join(__dirname, "../frontend/dist");
   socketApp.use(express.static(staticPath));
@@ -37,7 +37,7 @@ if (process.env.NODE_ENV?.trim() === "production") {
   });
 }
 
-// Sunucuyu Başlat
+// Başlat
 const startServer = async () => {
   try {
     await connectDB();

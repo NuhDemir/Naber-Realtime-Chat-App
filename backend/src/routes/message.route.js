@@ -8,11 +8,11 @@ import {
 
 const router = express.Router();
 
-// Sabit yollar önce
+// Sabit yollar önce tanımlanmalı
 router.get("/users", protectRoute, getUsersForSidebar);
-router.post("/send/:id", protectRoute, sendMessage);
 
-// En son dinamik id
-router.get("/:id", protectRoute, getMessages);
+// Dinamik ID içeren yollar en sona
+router.post("/send/:id", protectRoute, sendMessage);
+router.get("/:id", protectRoute, getMessages); // Bu sonda olmalı!
 
 export default router;

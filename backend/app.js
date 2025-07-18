@@ -28,8 +28,17 @@ socketApp.use(cookieParser());
 // 🔧 Router logu
 console.log("🔧 Mounting /api/auth ve /api/message router'ları...");
 
-socketApp.use("/api/auth", authRoutes);
-// socketApp.use("/api/message", messageRoutes);
+try {
+  socketApp.use("/api/auth", authRoutes);
+} catch (err) {
+  console.error("❌ authRoutes yüklenemedi:", err.message);
+}
+
+try {
+  socketApp.use("/api/message", messageRoutes);
+} catch (err) {
+  console.error("❌ messageRoutes yüklenemedi:", err.message);
+}
 
 // Prod ortamı
 if (process.env.NODE_ENV?.trim() === "production") {

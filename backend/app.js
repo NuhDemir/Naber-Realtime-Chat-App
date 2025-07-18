@@ -4,13 +4,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 
-import { app, server } from "./src/lib/socket.js";
+import { app as socketApp, server } from "./src/lib/socket.js";
 import { connectDB } from "./src/lib/db.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import messageRoutes from "./src/routes/message.route.js";
 
 dotenv.config();
-
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
@@ -19,32 +18,34 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));
-app.use(express.json({ limit: "5mb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+socketApp.use(cors(corsOptions));
+socketApp.use(express.json({ limit: "5mb" }));
+socketApp.use(express.urlencoded({ extended: true }));
+socketApp.use(cookieParser());
 
 // API Rotaları
-app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+socketApp.use("/api/auth", authRoutes);
+socketApp.use("/api/message", messageRoutes);
 
-// Production ortamında statik dosya sun
+// Statik dosyalar (Production)
 if (process.env.NODE_ENV?.trim() === "production") {
   const staticPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(staticPath));
+  socketApp.use(express.static(staticPath));
 
-  app.get("/*", (req, res) => {
+  socketApp.get("/*", (req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
   });
 }
 
+// Sunucuyu Başlat
 const startServer = async () => {
   try {
     await connectDB();
     server.listen(PORT, () => {
-      // Sunucu başlatıldı
+      console.log(`✅ Server ${PORT} portunda çalışıyor...`);
     });
   } catch (err) {
+    console.error("Sunucu başlatılamadı:", err);
     process.exit(1);
   }
 };

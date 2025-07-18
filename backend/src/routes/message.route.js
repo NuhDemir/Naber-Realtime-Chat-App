@@ -1,13 +1,18 @@
 import express from "express";
-import {protectRoute} from "../middleware/auth.middleware.js";
-import { getUsersForSidebar,getMessages,sendMessage } from "../controller/message.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import {
+  getUsersForSidebar,
+  getMessages,
+  sendMessage,
+} from "../controller/message.controller.js";
 
 const router = express.Router();
 
-router.get("/users",protectRoute,getUsersForSidebar);
+// Sabit yollar önce
+router.get("/users", protectRoute, getUsersForSidebar);
+router.post("/send/:id", protectRoute, sendMessage);
 
-// router.get("/:id",protectRoute,getMessages);
-
-router.post("/send/:id",protectRoute,sendMessage);
+// En son dinamik id
+router.get("/:id", protectRoute, getMessages);
 
 export default router;

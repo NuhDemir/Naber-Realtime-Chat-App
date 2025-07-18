@@ -1,18 +1,13 @@
 import express from "express";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 
-import { connectDB } from "./src/lib/db.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import messageRoutes from "./src/routes/message.routes.js";
-import { app, server } from "./src/lib/socket.js";
 import logger from "./src/log/logger.js";
 
-dotenv.config();
-
-const PORT = process.env.PORT;
+const app = express();
 const __dirname = path.resolve();
 
 app.use(express.json());
@@ -46,16 +41,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-process.on("uncaughtException", (err) => {
-  logger.error("❌ Uncaught Exception:", { message: err.message, stack: err.stack });
-  process.exit(1);
-});
-
-process.on("unhandledRejection", (reason) => {
-  logger.error("❌ Unhandled Rejection:", { reason });
-});
-
-server.listen(PORT, () => {
-  logger.info("Server is running on PORT:" + PORT);
-  connectDB();
-});
+export default app;

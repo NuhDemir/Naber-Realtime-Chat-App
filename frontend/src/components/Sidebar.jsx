@@ -1,3 +1,5 @@
+// frontend/src/components/Sidebar.jsx
+
 import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
@@ -6,17 +8,21 @@ import { Users } from "lucide-react";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
-
-  const { onlineUsers } = useAuthStore();
+  
+  // Hem online kullanıcı listesini hem de mevcut giriş yapmış kullanıcıyı alıyoruz
+  const { onlineUsers, authUser } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   useEffect(() => {
     getUsers();
   }, [getUsers]);
 
+  // Giriş yapmış kullanıcıyı kenar çubuğunda göstermemek için filtreleme
+  const usersToDisplay = users.filter(user => user._id !== authUser._id);
+
   const filteredUsers = showOnlineOnly
-    ? users.filter((user) => onlineUsers.includes(user._id))
-    : users;
+    ? usersToDisplay.filter((user) => onlineUsers.includes(user._id))
+    : usersToDisplay;
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -25,9 +31,9 @@ const Sidebar = () => {
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
-          <span className="font-medium hidden lg:block">Contacts</span>
+          <span className="font-medium hidden lg:block">Kişiler</span>
         </div>
-        {/* TODO: Online filter toggle */}
+        
         <div className="mt-3 hidden lg:flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -36,9 +42,13 @@ const Sidebar = () => {
               onChange={(e) => setShowOnlineOnly(e.target.checked)}
               className="checkbox checkbox-sm"
             />
-            <span className="text-sm">Show online only</span>
+            <span className="text-sm">Sadece çevrimiçi</span>
           </label>
-          <span className="text-xs text-zinc-500">({onlineUsers.length - 1} online)</span>
+          
+          {/* DÜZELTME: Kendimiz hariç online olanların sayısını güvenli bir şekilde hesaplıyoruz */}
+          <span className="text-xs text-base-content/60">
+            ({onlineUsers.filter(id => id !== authUser._id).length} çevrimiçi)
+          </span>
         </div>
       </div>
 
@@ -56,29 +66,30 @@ const Sidebar = () => {
             <div className="relative mx-auto lg:mx-0">
               <img
                 src={user.profilePic || "/avatar.png"}
-                alt={user.name}
+                alt={user.fullName}
                 className="size-12 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
                 <span
                   className="absolute bottom-0 right-0 size-3 bg-green-500 
-                  rounded-full ring-2 ring-zinc-900"
+                  rounded-full ring-2 ring-base-100"
                 />
               )}
             </div>
 
-            {/* User info - only visible on larger screens */}
             <div className="hidden lg:block text-left min-w-0">
               <div className="font-medium truncate">{user.fullName}</div>
-              <div className="text-sm text-zinc-400">
-                {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+              <div className="text-sm text-base-content/70">
+                {onlineUsers.includes(user._id) ? "Çevrimiçi" : "Çevrimdışı"}
               </div>
             </div>
           </button>
         ))}
 
         {filteredUsers.length === 0 && (
-          <div className="text-center text-zinc-500 py-4">No online users</div>
+          <div className="text-center text-base-content/60 py-4 text-sm">
+            Gösterilecek kullanıcı yok.
+          </div>
         )}
       </div>
     </aside>

@@ -1,3 +1,5 @@
+// backend/app.js
+
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -26,7 +28,7 @@ app.use(cookieParser());
 
 // API Rotaları
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes); // Rota tanımını message (tekil) olarak güncelledik
+app.use("/api/message", messageRoutes);
 
 // Production için Statik Dosya Sunumu
 if (process.env.NODE_ENV === "production") {

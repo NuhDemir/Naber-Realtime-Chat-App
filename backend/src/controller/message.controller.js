@@ -3,7 +3,9 @@ console.log("[mod] message.controller.js loaded");
 import Message from "../models/message.model.js";
 
 import cloudinary from "../lib/cloudinary.js";
-import { getReceiverSocketId, io } from "../lib/socket.js";
+// Lazy import socket helpers inside the function to avoid circular imports
+// (socket -> app -> routes -> controller -> socket) which can cause
+// module initialization problems during deploy.
 
 export const getUsersForSidebar = async (req, res) => {
   try {
@@ -60,9 +62,16 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+    // Import socket helpers lazily to prevent circular import issues
+    try {
+      const socketMod = await import("../lib/socket.js");
+      const receiverSocketId = socketMod.getReceiverSocketId(receiverId);
+      if (receiverSocketId && socketMod.io) {
+        socketMod.io.to(receiverSocketId).emit("newMessage", newMessage);
+      }
+    } catch (socketErr) {
+      // Don't fail the request if socket import fails; just log it.
+      console.error("Socket emit failed:", socketErr?.message || socketErr);
     }
 
     res.status(201).json(newMessage);

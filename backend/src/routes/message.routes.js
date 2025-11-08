@@ -1,4 +1,5 @@
 import express from "express";
+console.log("[mod] message.routes.js loaded");
 import {
   getMessages,
   sendMessage,

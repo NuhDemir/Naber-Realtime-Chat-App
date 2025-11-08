@@ -1,23 +1,26 @@
-import User from '../models/user.model.js';
-import bcrypt from 'bcryptjs';
-import { generateToken } from '../lib/utils.js';
-import cloudinary from '../lib/cloudinary.js';
+import User from "../models/user.model.js";
+console.log("[mod] auth.controller.js loaded");
+import bcrypt from "bcryptjs";
+import { generateToken } from "../lib/utils.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
     if (!fullName || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -37,8 +40,8 @@ export const signup = async (req, res) => {
       profilePic: newUser.profilePic,
     });
   } catch (err) {
-    console.error('Error in signup controller:', err.message);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error in signup controller:", err.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -48,12 +51,12 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     generateToken(user._id, res);
@@ -65,18 +68,18 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.error('Error in login controller:', error.message);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error in login controller:", error.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const logout = (req, res) => {
   try {
-    res.cookie('jwt', '', { maxAge: 0 });
-    return res.status(200).json({ message: 'Logged out successfully' });
+    res.cookie("jwt", "", { maxAge: 0 });
+    return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error('Error in logout controller:', error.message);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error in logout controller:", error.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -103,14 +106,14 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-export const checkAuth = (req,res) => {
+export const checkAuth = (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in chechAuth Controller",error.message);
-    res.status(500).json({message:"Internal Server Error"});
+    console.log("Error in chechAuth Controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
 export const updateUserDetails = async (req, res) => {
   try {
@@ -118,7 +121,9 @@ export const updateUserDetails = async (req, res) => {
     const userId = req.user._id;
 
     if (!fullName || !email) {
-      return res.status(400).json({ message: "İsim ve e-posta alanları zorunludur." });
+      return res
+        .status(400)
+        .json({ message: "İsim ve e-posta alanları zorunludur." });
     }
 
     const user = await User.findById(userId);
@@ -127,10 +132,12 @@ export const updateUserDetails = async (req, res) => {
     if (email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser && existingUser._id.toString() !== userId.toString()) {
-        return res.status(400).json({ message: "Bu e-posta adresi zaten kullanılıyor." });
+        return res
+          .status(400)
+          .json({ message: "Bu e-posta adresi zaten kullanılıyor." });
       }
     }
-    
+
     user.fullName = fullName;
     user.email = email;
 
@@ -138,11 +145,11 @@ export const updateUserDetails = async (req, res) => {
 
     // Şifre olmadan güncel kullanıcı verisini geri döndür
     const updatedUserResponse = {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        profilePic: user.profilePic,
-        createdAt: user.createdAt
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+      createdAt: user.createdAt,
     };
 
     return res.status(200).json(updatedUserResponse);

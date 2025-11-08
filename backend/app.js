@@ -45,15 +45,25 @@ app.use((req, res, next) => {
 // route registration.
 (async () => {
   try {
+    // extra console logs to make Render logs clearer when route import fails
+    console.log("[app] Starting dynamic route imports...");
     const authMod = await import("./src/routes/auth.routes.js");
     authRoutes = authMod.default;
+    console.log("[app] auth.routes imported");
     app.use("/api/auth", authRoutes);
 
     const msgMod = await import("./src/routes/message.routes.js");
     messageRoutes = msgMod.default;
+    console.log("[app] message.routes imported");
     app.use("/api/message", messageRoutes);
   } catch (err) {
-    logger.error("Route registration failed:", { message: err.message, stack: err.stack });
+    // log both to winston and console so Render shows it in build logs
+    console.error("[app] Route registration failed:", err.message);
+    console.error(err.stack);
+    logger.error("Route registration failed:", {
+      message: err.message,
+      stack: err.stack,
+    });
     // Re-throw so the process exits and Render logs the failure (we want that).
     throw err;
   }

@@ -18,8 +18,9 @@ const Profile = () => {
   useEffect(() => {
     if (authUser) {
       setFormData({
-        fullName: authUser.fullName,
-        email: authUser.email,
+        // Ensure we never set undefined into the inputs — always provide empty string fallback
+        fullName: authUser.fullName || "",
+        email: authUser.email || "",
       });
     }
   }, [authUser]);
@@ -141,7 +142,9 @@ const Profile = () => {
             <h2 className="text-lg font-medium mb-2">Hesap Bilgileri</h2>
             <div className="flex items-center justify-between py-2 border-b border-base-300">
               <span className="text-sm">Üyelik Tarihi</span>
-              <span className="text-sm font-mono">{new Date(authUser.createdAt).toLocaleDateString()}</span>
+              <span className="text-sm font-mono">
+                {authUser?.createdAt ? new Date(authUser.createdAt).toLocaleDateString() : "-"}
+              </span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Hesap Durumu</span>

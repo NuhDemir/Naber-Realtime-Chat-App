@@ -1,0 +1,15 @@
+[build]
+  # Install dependencies and build the frontend located in `frontend/`
+  command = "npm install --prefix frontend && npm run build --prefix frontend"
+  publish = "frontend/dist"
+  environment = { NODE_ENV = "production" }
+
+[dev]
+  # Local Netlify dev isn't required but this helps Netlify CLI (optional)
+  command = "npm run dev --prefix frontend"
+
+# Redirect any client-side routes to index.html (single page app)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,26 @@
+# Render YAML to deploy the backend subfolder as a Web Service
+# To use: push this repo to GitHub, then in Render select "Create a new Web Service from Render.yaml"
+# Adjust `name`, `repo`, and `branch` values inside Render dashboard if necessary.
+services:
+  - type: web
+    name: naber-backend
+    env: node
+    plan: free
+    # Deploy the backend subfolder so Render runs npm commands inside backend/
+    root: backend
+    buildCommand: "npm install"
+    startCommand: "npm run start"
+    # You can set environment variables in Render dashboard or use the UI
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Do NOT store secrets here in git — set them in Render dashboard after creating the service
+      # - key: MONGO_URI
+      #   value: <YOUR_MONGO_URI>
+      # - key: JWT_SECRET
+      #   value: <YOUR_JWT_SECRET>
+      # - key: CLOUDINARY_CLOUD_NAME
+      # - key: CLOUDINARY_API_KEY
+      # - key: CLOUDINARY_API_SECRET
+      # - key: CLIENT_URL
+      #   value: https://<your-netlify-site>.netlify.app

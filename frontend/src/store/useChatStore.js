@@ -14,7 +14,12 @@ export const useChatStore = create((set, get) => ({
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/message/users");
-      set({ users: res.data });
+      // Normalize API response to always set an array on `users`.
+      // Some APIs may return { users: [...] } or directly [...]. Handle both.
+      const usersPayload = Array.isArray(res.data)
+        ? res.data
+        : res.data.users || [];
+      set({ users: usersPayload });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -36,7 +41,10 @@ export const useChatStore = create((set, get) => ({
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
-      const res = await axiosInstance.post(`/message/send/${selectedUser._id}`, messageData);
+      const res = await axiosInstance.post(
+        `/message/send/${selectedUser._id}`,
+        messageData
+      );
       set({ messages: [...messages, res.data] });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -50,7 +58,8 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
+      const isMessageSentFromSelectedUser =
+        newMessage.senderId === selectedUser._id;
       if (!isMessageSentFromSelectedUser) return;
 
       set({

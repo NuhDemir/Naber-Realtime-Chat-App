@@ -7,8 +7,9 @@ import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
 
 const Sidebar = () => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
-  
+  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
+    useChatStore();
+
   // Hem online kullanıcı listesini hem de mevcut giriş yapmış kullanıcıyı alıyoruz
   const { onlineUsers, authUser } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
@@ -18,10 +19,18 @@ const Sidebar = () => {
   }, [getUsers]);
 
   // Giriş yapmış kullanıcıyı kenar çubuğunda göstermemek için filtreleme
-  const usersToDisplay = users.filter(user => user._id !== authUser._id);
+  // users may sometimes be non-array due to unexpected API shape; guard defensively
+  const usersArray = Array.isArray(users) ? users : [];
+  const currentUserId = authUser && authUser._id ? authUser._id : null;
+
+  const usersToDisplay = usersArray.filter(
+    (user) => user._id !== currentUserId
+  );
 
   const filteredUsers = showOnlineOnly
-    ? usersToDisplay.filter((user) => onlineUsers.includes(user._id))
+    ? usersToDisplay.filter(
+        (user) => Array.isArray(onlineUsers) && onlineUsers.includes(user._id)
+      )
     : usersToDisplay;
 
   if (isUsersLoading) return <SidebarSkeleton />;
@@ -33,7 +42,7 @@ const Sidebar = () => {
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Kişiler</span>
         </div>
-        
+
         <div className="mt-3 hidden lg:flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -44,10 +53,14 @@ const Sidebar = () => {
             />
             <span className="text-sm">Sadece çevrimiçi</span>
           </label>
-          
+
           {/* DÜZELTME: Kendimiz hariç online olanların sayısını güvenli bir şekilde hesaplıyoruz */}
           <span className="text-xs text-base-content/60">
-            ({onlineUsers.filter(id => id !== authUser._id).length} çevrimiçi)
+            (
+            {Array.isArray(onlineUsers)
+              ? onlineUsers.filter((id) => id !== currentUserId).length
+              : 0}{" "}
+            çevrimiçi)
           </span>
         </div>
       </div>
@@ -60,7 +73,11 @@ const Sidebar = () => {
             className={`
               w-full p-3 flex items-center gap-3
               hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
+              ${
+                selectedUser?._id === user._id
+                  ? "bg-base-300 ring-1 ring-base-300"
+                  : ""
+              }
             `}
           >
             <div className="relative mx-auto lg:mx-0">

@@ -4,8 +4,9 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import authRoutes from "./src/routes/auth.routes.js";
-import messageRoutes from "./src/routes/message.routes.js";
+// Import routes dynamically so we can catch and log initialization errors
+let authRoutes;
+let messageRoutes;
 import logger from "./src/log/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -39,8 +40,24 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+// Dynamically import and register routes inside an async IIFE so we can
+// log which module throws if path-to-regexp (or similar) errors occur during
+// route registration.
+(async () => {
+  try {
+    const authMod = await import("./src/routes/auth.routes.js");
+    authRoutes = authMod.default;
+    app.use("/api/auth", authRoutes);
+
+    const msgMod = await import("./src/routes/message.routes.js");
+    messageRoutes = msgMod.default;
+    app.use("/api/message", messageRoutes);
+  } catch (err) {
+    logger.error("Route registration failed:", { message: err.message, stack: err.stack });
+    // Re-throw so the process exits and Render logs the failure (we want that).
+    throw err;
+  }
+})();
 
 // 🌐 Frontend statik dosyaları serve et
 if (process.env.NODE_ENV === "production") {

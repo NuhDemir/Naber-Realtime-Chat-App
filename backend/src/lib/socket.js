@@ -6,7 +6,10 @@ const server = http.createServer(app);
 
 // Sanitize CLIENT_URL (same logic as in app.js)
 const rawClientUrl = process.env.CLIENT_URL || "https://naber-chat.netlify.app";
-const CLIENT_URL = typeof rawClientUrl === "string" ? rawClientUrl.trim().replace(/\/$/, "") : rawClientUrl;
+const CLIENT_URL =
+  typeof rawClientUrl === "string"
+    ? rawClientUrl.trim().replace(/\/$/, "")
+    : rawClientUrl;
 
 const io = new Server(server, {
   cors: {

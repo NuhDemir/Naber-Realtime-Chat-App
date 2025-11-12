@@ -22,7 +22,7 @@ const CLIENT_URL =
   typeof rawClientUrl === "string"
     ? rawClientUrl.trim().replace(/\/$/, "")
     : rawClientUrl;
-    
+
 console.log("[app] CLIENT_URL configured as:", CLIENT_URL);
 console.log("[app] NODE_ENV:", process.env.NODE_ENV);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import ChatContainer from "../components/ChatContainer.jsx";
 import NoChatSelected from "../components/NoChatSelected.jsx";
@@ -6,7 +6,21 @@ import Sidebar from "../components/Sidebar.jsx";
 import TutorialCard from "../components/TutorialCard.jsx";
 
 const Home = () => {
-  const { selectedUser } = useChatStore();
+  const {
+    selectedUser,
+    subscribeToNotifications,
+    unsubscribeFromNotifications,
+  } = useChatStore();
+
+  // Component mount olduğunda bildirimlere abone ol
+  useEffect(() => {
+    subscribeToNotifications();
+
+    // Cleanup: Component unmount olduğunda aboneliği iptal et
+    return () => {
+      unsubscribeFromNotifications();
+    };
+  }, [subscribeToNotifications, unsubscribeFromNotifications]);
 
   return (
     <div className="h-screen bg-base-200">

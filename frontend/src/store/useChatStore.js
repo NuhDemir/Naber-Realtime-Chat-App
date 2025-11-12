@@ -2,6 +2,7 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
+import MessageNotification from "../components/MessageNotification";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -68,7 +69,49 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  unsubscribeFromMessages: () => {
+  // Yeni mesaj bildirimleri için global listener
+  subscribeToNotifications: () => {
+    const socket = useAuthStore.getState().socket;
+
+    socket.on("newMessage", (newMessage) => {
+      const { selectedUser } = get();
+      const { users } = get();
+
+      // Eğer mesaj şu anda açık olan sohbetten geliyorsa bildirim gösterme
+      if (selectedUser && newMessage.senderId === selectedUser._id) return;
+
+      // Mesajı gönderen kullanıcıyı bul
+      const sender = users.find((user) => user._id === newMessage.senderId);
+
+      if (sender) {
+        // Özel toast bildirimi göster (sol alt köşe)
+        toast.custom(
+          (t) => (
+            <div
+              onClick={() => {
+                toast.dismiss(t.id);
+                // Kullanıcıya tıklandığında o sohbeti aç
+                set({ selectedUser: sender });
+              }}
+              className="cursor-pointer"
+            >
+              <MessageNotification
+                sender={sender.fullName}
+                message={newMessage}
+                profilePic={sender.profilePic}
+              />
+            </div>
+          ),
+          {
+            duration: 4000,
+            position: "bottom-left",
+          }
+        );
+      }
+    });
+  },
+
+  unsubscribeFromNotifications: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
   },

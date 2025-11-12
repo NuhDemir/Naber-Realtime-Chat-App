@@ -65,7 +65,28 @@ const App = () => {
           element={authUser ? <Profile /> : <Navigate to="/login" />}
         />
       </Routes>
-      <Toaster />
+      <Toaster
+        position="bottom-left"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "var(--fallback-b1,oklch(var(--b1)))",
+            color: "var(--fallback-bc,oklch(var(--bc)))",
+          },
+          success: {
+            iconTheme: {
+              primary: "var(--fallback-su,oklch(var(--su)))",
+              secondary: "var(--fallback-suc,oklch(var(--suc)))",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "var(--fallback-er,oklch(var(--er)))",
+              secondary: "var(--fallback-erc,oklch(var(--erc)))",
+            },
+          },
+        }}
+      />
     </>
   );
 };

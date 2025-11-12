@@ -97,23 +97,68 @@ export const logout = (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { profilePic } = req.body;
+
     if (!profilePic) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "Profil fotoğrafı gereklidir" });
     }
 
+    // Cloudinary yapılandırma kontrolü
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
+      console.error("❌ Cloudinary environment variables missing!");
+      return res.status(500).json({
+        message: "Sunucu yapılandırma hatası. Cloudinary ayarları eksik.",
+      });
+    }
+
+    console.log("[updateProfile] Cloudinary'e yükleniyor...");
+
     // Cloudinary yüklemesi
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      folder: "naber-chat-profiles",
+      transformation: [
+        { width: 400, height: 400, crop: "fill", gravity: "face" },
+        { quality: "auto" },
+      ],
+    });
+
+    console.log(
+      "[updateProfile] Cloudinary upload başarılı:",
+      uploadResponse.secure_url
+    );
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { profilePic: uploadResponse.secure_url },
       { new: true }
-    );
+    ).select("-password");
 
     return res.status(200).json(updatedUser);
   } catch (error) {
-    console.error("Error in updateProfile controller:", error.message);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("❌ Error in updateProfile controller:", error);
+
+    // Cloudinary hataları için özel mesajlar
+    if (error.message?.includes("Invalid image")) {
+      return res.status(400).json({ message: "Geçersiz resim formatı" });
+    }
+    if (error.message?.includes("File size too large")) {
+      return res
+        .status(400)
+        .json({ message: "Dosya boyutu çok büyük (max 10MB)" });
+    }
+    if (error.http_code === 401) {
+      return res
+        .status(500)
+        .json({ message: "Cloudinary kimlik doğrulama hatası" });
+    }
+
+    return res.status(500).json({
+      message: "Profil fotoğrafı yüklenirken hata oluştu",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 

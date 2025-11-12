@@ -90,10 +90,21 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Profil fotoğrafı güncellendi");
     } catch (error) {
-      console.log("error in update profile:", error);
-      toast.error(
-        error.response?.data?.message || "Profil fotoğrafı güncellenemedi"
-      );
+      console.error("❌ Profil güncelleme hatası:", error);
+
+      // Detaylı hata mesajları
+      if (error.response?.status === 500) {
+        toast.error("Sunucu hatası. Cloudinary ayarlarını kontrol edin.");
+      } else if (error.code === "ERR_NETWORK") {
+        toast.error("Bağlantı hatası. İnternet bağlantınızı kontrol edin.");
+      } else {
+        toast.error(
+          error.response?.data?.message || "Profil fotoğrafı güncellenemedi"
+        );
+      }
+
+      // Hatayı yukarı fırlat ki caller yakalayabilsin
+      throw error;
     } finally {
       set({ isUpdatingProfile: false });
     }

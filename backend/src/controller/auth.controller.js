@@ -7,12 +7,16 @@ import cloudinary from "../lib/cloudinary.js";
 export const signup = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
+    
+    console.log("[signup] Request body:", { fullName, email, password: "***" });
 
     if (!fullName || !email || !password) {
+      console.log("[signup] Missing fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (password.length < 6) {
+      console.log("[signup] Password too short");
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
@@ -20,6 +24,7 @@ export const signup = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log("[signup] Email already exists:", email);
       return res.status(400).json({ message: "Email already exists" });
     }
 

@@ -71,6 +71,12 @@ export const useChatStore = create((set, get) => ({
   // Yeni mesaj bildirimleri için global listener
   subscribeToNotifications: () => {
     const socket = useAuthStore.getState().socket;
+    
+    // Socket bağlantısı yoksa çık
+    if (!socket) {
+      console.log("[subscribeToNotifications] Socket henüz bağlanmamış");
+      return;
+    }
 
     socket.on("newMessage", (newMessage) => {
       const { selectedUser } = get();
@@ -107,6 +113,7 @@ export const useChatStore = create((set, get) => ({
 
   unsubscribeFromNotifications: () => {
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
     socket.off("newMessage");
   },
 

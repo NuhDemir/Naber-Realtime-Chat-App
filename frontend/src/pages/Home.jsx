@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 import ChatContainer from "../components/ChatContainer.jsx";
 import NoChatSelected from "../components/NoChatSelected.jsx";
 import Sidebar from "../components/Sidebar.jsx";
@@ -11,16 +12,20 @@ const Home = () => {
     subscribeToNotifications,
     unsubscribeFromNotifications,
   } = useChatStore();
+  const { socket } = useAuthStore();
 
   // Component mount olduğunda bildirimlere abone ol
+  // Socket bağlantısı kurulduktan sonra çalışır
   useEffect(() => {
-    subscribeToNotifications();
+    if (socket) {
+      subscribeToNotifications();
+    }
 
     // Cleanup: Component unmount olduğunda aboneliği iptal et
     return () => {
       unsubscribeFromNotifications();
     };
-  }, [subscribeToNotifications, unsubscribeFromNotifications]);
+  }, [socket, subscribeToNotifications, unsubscribeFromNotifications]);
 
   return (
     <div className="h-screen bg-base-200">

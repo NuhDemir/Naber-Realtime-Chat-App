@@ -11,10 +11,14 @@ import Profile from './pages/Profile';
 
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore'; // YENİ: Tema store'u import edildi
+import { useKeepAlive } from './hooks/useKeepAlive'; // YENİ: Keep-alive hook
 
 const App = () => {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
   const { theme } = useThemeStore(); // YENİ: Mevcut temayı store'dan al
+
+  // YENİ: Keep backend alive (Render free tier için)
+  useKeepAlive();
 
   // YENİ: Tema değiştiğinde <html> etiketini güncellemek için useEffect kullan
   useEffect(() => {

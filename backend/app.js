@@ -4,9 +4,6 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Import routes dynamically so we can catch and log initialization errors
-let authRoutes;
-let messageRoutes;
 import logger from "./src/log/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,34 +37,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Dynamically import and register routes inside an async IIFE so we can
-// log which module throws if path-to-regexp (or similar) errors occur during
-// route registration.
-(async () => {
-  try {
-    // extra console logs to make Render logs clearer when route import fails
-    console.log("[app] Starting dynamic route imports...");
-    const authMod = await import("./src/routes/auth.routes.js");
-    authRoutes = authMod.default;
-    console.log("[app] auth.routes imported");
-    app.use("/api/auth", authRoutes);
+// Import routes synchronously (using top-level await would require module changes)
+// Instead we'll import routes the traditional way to avoid race conditions
+console.log("[app] Importing auth routes...");
+import authRoutes from "./src/routes/auth.routes.js";
+console.log("[app] auth.routes imported");
+app.use("/api/auth", authRoutes);
 
-    const msgMod = await import("./src/routes/message.routes.js");
-    messageRoutes = msgMod.default;
-    console.log("[app] message.routes imported");
-    app.use("/api/message", messageRoutes);
-  } catch (err) {
-    // log both to winston and console so Render shows it in build logs
-    console.error("[app] Route registration failed:", err.message);
-    console.error(err.stack);
-    logger.error("Route registration failed:", {
-      message: err.message,
-      stack: err.stack,
-    });
-    // Re-throw so the process exits and Render logs the failure (we want that).
-    throw err;
-  }
-})();
+console.log("[app] Importing message routes...");
+import messageRoutes from "./src/routes/message.routes.js";
+console.log("[app] message.routes imported");
+app.use("/api/message", messageRoutes);
 
 // 🌐 Frontend statik dosyaları serve et
 if (process.env.NODE_ENV === "production") {

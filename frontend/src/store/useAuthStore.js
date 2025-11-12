@@ -13,13 +13,13 @@ export const useAuthStore = create((set, get) => ({
   // ==================
   //      STATE
   // ==================
-  authUser: null,           // Giriş yapmış kullanıcı bilgileri veya null
-  isSigningUp: false,       // Kayıt olma işlemi devam ediyor mu?
-  isLoggingIn: false,       // Giriş yapma işlemi devam ediyor mu?
+  authUser: null, // Giriş yapmış kullanıcı bilgileri veya null
+  isSigningUp: false, // Kayıt olma işlemi devam ediyor mu?
+  isLoggingIn: false, // Giriş yapma işlemi devam ediyor mu?
   isUpdatingProfile: false, // Profil güncelleme işlemi devam ediyor mu?
-  isCheckingAuth: true,     // Uygulama başlangıcındaki oturum kontrolü devam ediyor mu?
-  onlineUsers: [],          // Çevrimiçi kullanıcıların ID listesi
-  socket: null,             // Socket.IO bağlantı nesnesi
+  isCheckingAuth: true, // Uygulama başlangıcındaki oturum kontrolü devam ediyor mu?
+  onlineUsers: [], // Çevrimiçi kullanıcıların ID listesi
+  socket: null, // Socket.IO bağlantı nesnesi
 
   // ==================
   //     ACTIONS
@@ -91,7 +91,9 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profil fotoğrafı güncellendi");
     } catch (error) {
       console.log("error in update profile:", error);
-      toast.error(error.response?.data?.message || "Profil fotoğrafı güncellenemedi");
+      toast.error(
+        error.response?.data?.message || "Profil fotoğrafı güncellenemedi"
+      );
     } finally {
       set({ isUpdatingProfile: false });
     }

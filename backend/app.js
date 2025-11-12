@@ -54,7 +54,7 @@ app.use("/api/message", messageRoutes);
 // Render/production'da frontend Netlify'de ayrı host edilir
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.resolve(__dirname, "../frontend/dist");
-  
+
   // Check if frontend dist exists (for monorepo deploys, not needed for Render)
   if (existsSync(frontendPath)) {
     console.log("[app] Serving frontend static files from:", frontendPath);
@@ -64,14 +64,16 @@ if (process.env.NODE_ENV === "production") {
     // This catches all non-API routes and serves index.html for client-side routing
     app.use((req, res, next) => {
       // Only serve index.html for non-API routes
-      if (!req.path.startsWith('/api')) {
+      if (!req.path.startsWith("/api")) {
         res.sendFile(path.join(frontendPath, "index.html"));
       } else {
         next();
       }
     });
   } else {
-    console.log("[app] Frontend dist not found - assuming separate frontend deployment (Netlify)");
+    console.log(
+      "[app] Frontend dist not found - assuming separate frontend deployment (Netlify)"
+    );
   }
 }
 

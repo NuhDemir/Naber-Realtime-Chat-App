@@ -7,7 +7,9 @@ export const protectRoute = async (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (!process.env.JWT_SECRET) {
-      console.warn('[auth.middleware] WARNING: JWT_SECRET is not set in environment; token verification will fail');
+      console.warn(
+        "[auth.middleware] WARNING: JWT_SECRET is not set in environment; token verification will fail"
+      );
     }
 
     if (!token) {

@@ -44,7 +44,7 @@ const TutorialCard = () => {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-white">
-                Naber Chat'e Hoş Geldiniz! 👋
+                Naber Chat'e Hoş Geldiniz!
               </h2>
               <p className="text-white/90 mt-1">
                 Modern ve gerçek zamanlı sohbet deneyimi
@@ -61,7 +61,7 @@ const TutorialCard = () => {
               <MessageSquare className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-2">💬 Anlık Mesajlaşma</h3>
+              <h3 className="font-bold text-lg mb-2"> Anlık Mesajlaşma</h3>
               <p className="text-base-content/70">
                 Socket.IO teknolojisi ile gerçek zamanlı mesajlaşma yapın.
                 Mesajlarınız anında karşı tarafa ulaşır!
@@ -75,9 +75,7 @@ const TutorialCard = () => {
               <Users className="w-6 h-6 text-secondary" />
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-2">
-                🟢 Çevrimiçi Kullanıcılar
-              </h3>
+              <h3 className="font-bold text-lg mb-2">Çevrimiçi Kullanıcılar</h3>
               <p className="text-base-content/70">
                 Hangi arkadaşlarınızın çevrimiçi olduğunu anında görün. Yeşil
                 işaret çevrimiçi kullanıcıları gösterir.
@@ -91,7 +89,7 @@ const TutorialCard = () => {
               <Palette className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-2">🎨 Tema Özelleştirme</h3>
+              <h3 className="font-bold text-lg mb-2"> Tema Özelleştirme</h3>
               <p className="text-base-content/70">
                 30+ farklı tema arasından seçim yapın! Ayarlar sayfasından size
                 en uygun temayı seçebilirsiniz.
@@ -105,7 +103,7 @@ const TutorialCard = () => {
               <Settings className="w-6 h-6 text-success" />
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-2">👤 Profil Yönetimi</h3>
+              <h3 className="font-bold text-lg mb-2"> Profil Yönetimi</h3>
               <p className="text-base-content/70">
                 Profil fotoğrafınızı yükleyin, bilgilerinizi güncelleyin.
                 Cloudinary entegrasyonu ile hızlı resim yükleme!
@@ -116,7 +114,7 @@ const TutorialCard = () => {
           {/* Teknoloji Stack */}
           <div className="bg-gradient-to-br from-base-200 to-base-300 p-4 rounded-lg border-2 border-primary/20">
             <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-              <span>⚡</span>
+              <span></span>
               <span>Teknoloji Stack</span>
             </h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -150,7 +148,7 @@ const TutorialCard = () => {
           {/* Quick Tips */}
           <div className="bg-info/10 border-l-4 border-info p-4 rounded-r-lg">
             <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-              <span>💡</span>
+              <span></span>
               <span>Hızlı İpuçları</span>
             </h3>
             <ul className="space-y-2 text-sm text-base-content/70 list-disc list-inside">
@@ -168,7 +166,7 @@ const TutorialCard = () => {
             Daha Sonra Hatırlat
           </button>
           <button onClick={handleClose} className="btn btn-primary flex-1">
-            Başlayalım! 🚀
+            Başlayalım!
           </button>
         </div>
       </div>

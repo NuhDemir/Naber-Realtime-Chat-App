@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { existsSync } from "fs";
 
 import logger from "./src/log/logger.js";
 
@@ -49,21 +50,29 @@ import messageRoutes from "./src/routes/message.routes.js";
 console.log("[app] message.routes imported");
 app.use("/api/message", messageRoutes);
 
-// 🌐 Frontend statik dosyaları serve et
+// 🌐 Frontend statik dosyaları serve et (sadece monorepo local deploy için)
+// Render/production'da frontend Netlify'de ayrı host edilir
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.resolve(__dirname, "../frontend/dist");
-  app.use(express.static(frontendPath));
+  
+  // Check if frontend dist exists (for monorepo deploys, not needed for Render)
+  if (existsSync(frontendPath)) {
+    console.log("[app] Serving frontend static files from:", frontendPath);
+    app.use(express.static(frontendPath));
 
-  // Express 5.x: Use middleware for SPA fallback instead of app.get("*")
-  // This catches all non-API routes and serves index.html for client-side routing
-  app.use((req, res, next) => {
-    // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(frontendPath, "index.html"));
-    } else {
-      next();
-    }
-  });
+    // Express 5.x: Use middleware for SPA fallback instead of app.get("*")
+    // This catches all non-API routes and serves index.html for client-side routing
+    app.use((req, res, next) => {
+      // Only serve index.html for non-API routes
+      if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(frontendPath, "index.html"));
+      } else {
+        next();
+      }
+    });
+  } else {
+    console.log("[app] Frontend dist not found - assuming separate frontend deployment (Netlify)");
+  }
 }
 
 // Global error handler

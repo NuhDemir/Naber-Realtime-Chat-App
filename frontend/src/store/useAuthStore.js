@@ -5,7 +5,9 @@ import { io } from "socket.io-client";
 
 // Socket.IO için de ortam değişkenini kullanıyoruz.
 // Vite, .env dosyasındaki değişkenlere import.meta.env üzerinden erişir.
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+
+console.log("[socket] Connecting to Socket.IO:", SOCKET_URL);
 
 export const useAuthStore = create((set, get) => ({
   // ==================

@@ -9,7 +9,7 @@ const NoChatSelected = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.2, // Çocuk elemanların gecikme süresi
-        delayChildren: 0.3,   // Konteyner animasyonundan sonraki gecikme
+        delayChildren: 0.3, // Konteyner animasyonundan sonraki gecikme
       },
     },
   };
@@ -39,7 +39,6 @@ const NoChatSelected = () => {
     },
   };
 
-
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-center p-4 sm:p-10 bg-base-200/30">
       <motion.div
@@ -49,7 +48,10 @@ const NoChatSelected = () => {
         animate="visible"
       >
         {/* Logo ve Başlık */}
-        <motion.div variants={itemVariants} className="flex flex-col items-center gap-3">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col items-center gap-3"
+        >
           <motion.div
             className="size-20 rounded-2xl bg-primary/10 flex items-center justify-center shadow-lg"
             variants={iconVariants}
@@ -68,7 +70,8 @@ const NoChatSelected = () => {
           variants={itemVariants}
           className="text-base-content/70 leading-relaxed max-w-sm mx-auto"
         >
-          Sol taraftaki menüden bir sohbet seçerek mesajlaşmaya başla veya yeni arkadaşlar keşfet.
+          Sol taraftaki menüden bir sohbet seçerek mesajlaşmaya başla veya yeni
+          arkadaşlar keşfet.
         </motion.p>
 
         {/* İpuçları / Özellikler */}
@@ -81,8 +84,12 @@ const NoChatSelected = () => {
               <Users className="size-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-left text-base-content">Kişileri Keşfet</h3>
-              <p className="text-xs text-base-content/60 text-left">Yeni sohbetler başlat.</p>
+              <h3 className="font-semibold text-sm text-left text-base-content">
+                Kişileri Keşfet
+              </h3>
+              <p className="text-xs text-base-content/60 text-left">
+                Yeni sohbetler başlat.
+              </p>
             </div>
           </div>
 
@@ -91,8 +98,12 @@ const NoChatSelected = () => {
               <PenSquare className="size-5 text-secondary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-left text-base-content">Anında Mesajlaş</h3>
-              <p className="text-xs text-base-content/60 text-left">Gerçek zamanlı sohbet et.</p>
+              <h3 className="font-semibold text-sm text-left text-base-content">
+                Anında Mesajlaş
+              </h3>
+              <p className="text-xs text-base-content/60 text-left">
+                Gerçek zamanlı sohbet et.
+              </p>
             </div>
           </div>
         </motion.div>

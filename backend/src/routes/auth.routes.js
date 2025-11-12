@@ -14,7 +14,9 @@ const router = express.Router();
 
 // Keep-alive endpoint for preventing Render from sleeping
 router.get("/ping", (req, res) => {
-  res.status(200).json({ status: "alive", timestamp: new Date().toISOString() });
+  res
+    .status(200)
+    .json({ status: "alive", timestamp: new Date().toISOString() });
 });
 
 router.get("/check", protectRoute, checkAuth);

@@ -22,6 +22,10 @@ const CLIENT_URL =
   typeof rawClientUrl === "string"
     ? rawClientUrl.trim().replace(/\/$/, "")
     : rawClientUrl;
+    
+console.log("[app] CLIENT_URL configured as:", CLIENT_URL);
+console.log("[app] NODE_ENV:", process.env.NODE_ENV);
+
 if (typeof CLIENT_URL === "string" && !CLIENT_URL.startsWith("http")) {
   console.warn("Warning: CLIENT_URL does not look like a URL:", CLIENT_URL);
 }
@@ -32,6 +36,8 @@ app.use(
     credentials: true,
   })
 );
+
+console.log("[app] CORS configured with origin:", CLIENT_URL);
 
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.url}`);

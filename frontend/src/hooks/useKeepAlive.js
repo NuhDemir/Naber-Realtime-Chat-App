@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { axiosInstance } from '../lib/axios';
+import { useEffect, useRef } from "react";
+import { axiosInstance } from "../lib/axios";
 
 /**
  * Custom hook to keep the Render backend alive by sending periodic ping requests
@@ -12,10 +12,13 @@ export const useKeepAlive = () => {
     // Function to ping the backend
     const pingBackend = async () => {
       try {
-        await axiosInstance.get('/auth/ping');
-        console.log('[KeepAlive] Backend pinged successfully at', new Date().toLocaleTimeString());
+        await axiosInstance.get("/auth/ping");
+        console.log(
+          "[KeepAlive] Backend pinged successfully at",
+          new Date().toLocaleTimeString()
+        );
       } catch (error) {
-        console.warn('[KeepAlive] Ping failed:', error.message);
+        console.warn("[KeepAlive] Ping failed:", error.message);
       }
     };
 
@@ -30,7 +33,7 @@ export const useKeepAlive = () => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
-        console.log('[KeepAlive] Cleanup: interval cleared');
+        console.log("[KeepAlive] Cleanup: interval cleared");
       }
     };
   }, []);

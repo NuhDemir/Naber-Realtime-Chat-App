@@ -17,11 +17,11 @@ const Navbar = () => {
       <div className='container mx-auto px-4 h-16 flex items-center justify-between'>
 
         {/* Sol kısım: Logo ve Başlık */}
-        <Link to="/" className='flex items-center gap-2.5 hover:opacity-80 transition-all'>
-          <div className='size-9 rounded-lg bg-primary/10 flex items-center justify-center'>
-            <MessageSquare className='w-5 h-5 text-primary' />
+        <Link to="/" className='flex items-center gap-2.5 hover:opacity-80 transition-all group'>
+          <div className='size-9 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-300'>
+            <MessageSquare className='w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-300' />
           </div>
-          <h1 className='text-lg font-bold'>Naber</h1>
+          <h1 className='text-lg font-bold text-base-content'>Naber</h1>
         </Link>
 
         {/* Sağ kısım: Ayarlar, Profil ve Çıkış */}

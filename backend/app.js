@@ -54,9 +54,15 @@ if (process.env.NODE_ENV === "production") {
   const frontendPath = path.resolve(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Express 5.x requires '/*' instead of '*' for catch-all routes
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+  // Express 5.x: Use middleware for SPA fallback instead of app.get("*")
+  // This catches all non-API routes and serves index.html for client-side routing
+  app.use((req, res, next) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(frontendPath, "index.html"));
+    } else {
+      next();
+    }
   });
 }
 

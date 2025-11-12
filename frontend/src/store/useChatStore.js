@@ -1,9 +1,7 @@
-import React from "react";
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
-import MessageNotification from "../components/MessageNotification";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -85,29 +83,24 @@ export const useChatStore = create((set, get) => ({
       const sender = users.find((user) => user._id === newMessage.senderId);
 
       if (sender) {
-        // Özel toast bildirimi göster (sol alt köşe)
-        toast.custom(
-          (t) => (
-            <div
-              onClick={() => {
-                toast.dismiss(t.id);
-                // Kullanıcıya tıklandığında o sohbeti aç
-                set({ selectedUser: sender });
-              }}
-              className="cursor-pointer"
-            >
-              <MessageNotification
-                sender={sender.fullName}
-                message={newMessage}
-                profilePic={sender.profilePic}
-              />
-            </div>
-          ),
-          {
-            duration: 4000,
-            position: "bottom-left",
-          }
-        );
+        // Basit metin bildirimi
+        const messagePreview = newMessage.text
+          ? newMessage.text.length > 50
+            ? `${newMessage.text.substring(0, 50)}...`
+            : newMessage.text
+          : "📷 Fotoğraf gönderdi";
+
+        toast.success(`${sender.fullName}: ${messagePreview}`, {
+          duration: 4000,
+          position: "bottom-left",
+          icon: "💬",
+          style: {
+            cursor: "pointer",
+          },
+          onClick: () => {
+            set({ selectedUser: sender });
+          },
+        });
       }
     });
   },
